@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: alibaba-nginx
+    depends_on:
+      - app
+    ports:
+      - 80:80
+      - 8000:8000
+    volumes:
+      - ./.docker/nginx:/etc/nginx/conf.d/
+      - ./:/var/www
+    networks:
+      - site
+
+  app:
+    build:
+      args:
+        uid: 1000
+        user: tofiq
+      context: ./
+      dockerfile: Dockerfile
+    image: alibaba-app
+    container_name: alibaba-app
+    depends_on:
+      - database
+    networks:
+      - site
+      - app
+
+  database:
+    image: mysql:8.0
+    container_name: alibaba-database
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    ports:
+      - 3306:3306
+    volumes:
+      - database:/var/lib/mysql
+    networks:
+      - app
+
+volumes:
+  database:
+
+networks:
+  site:
+  app:
