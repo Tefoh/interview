@@ -20,7 +20,7 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->date('publication_at');
+            $table->date('publication_at')->nullable();
             $table->integer('publication_status')->default(\App\Enums\PublicationStatusEnum::DRAFT->value);
 
             $table->timestamps();
