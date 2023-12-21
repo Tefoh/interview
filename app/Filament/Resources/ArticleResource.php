@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Filament\Resources\ArticleResource\RelationManagers;
 use App\Models\Article;
+use App\Repositories\Article\ArticleRepositoryInterface;
 use App\Tables\Columns\PublicationDate;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -21,6 +22,13 @@ class ArticleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        $articleRepository = app(ArticleRepositoryInterface::class);
+
+        return $articleRepository->getAllBuilder();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -34,7 +42,7 @@ class ArticleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('authorName')->label('Author'),
+                Tables\Columns\TextColumn::make('author')->label('Author'),
                 Tables\Columns\TextColumn::make('publication_status')->label('Status'),
                 PublicationDate::make('publication_at')->label('Publication date'),
             ])
