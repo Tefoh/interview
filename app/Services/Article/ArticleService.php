@@ -40,20 +40,24 @@ class ArticleService implements ArticleServiceInterface
         return $article;
     }
 
-    public function saveArticleData(array $data): Article
+    public function saveArticle(array $data): Article
     {
-        $this->validateData($data);
-
         try {
+            if (! auth()->user()->isAdmin()) {
+                $data['author_id'] = auth()->id();
+                $data['publication_status'] = PublicationStatusEnum::DRAFT;
+                $data['publication_at'] = null;
+            }
+
             /** @var Article $article */
             $article = $this->articleRepository->save($data);
         } catch (Exception $exception) {
             DB::rollBack();
-            Log::error('error-at-update-article', [
+            Log::error('error-at-save-article', [
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to update article data');
+            throw new InvalidArgumentException('Unable to save article data');
         }
 
         return $article;
@@ -61,8 +65,6 @@ class ArticleService implements ArticleServiceInterface
 
     public function updateArticle($data, $id): Article
     {
-        $this->validateData($data);
-
         DB::beginTransaction();
 
         try {
@@ -103,20 +105,5 @@ class ArticleService implements ArticleServiceInterface
         DB::commit();
 
         return $article;
-    }
-
-    private function validateData(array $data): void
-    {
-        $validator = Validator::make($data, [
-            'title' => ['required', 'string'],
-            'content' => ['required', 'string'],
-            'author_id' => ['required', 'integer'],
-            'publication_at' => ['nullable', 'date:Y-m-d'],
-            'publication_status' => ['required', Rule::enum(PublicationStatusEnum::class)],
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
     }
 }

@@ -9,7 +9,7 @@ interface ArticleServiceInterface
 {
     public function getAll(): Collection;
     public function getById(int $id): Article;
-    public function saveArticleData(array $data): Article;
+    public function saveArticle(array $data): Article;
     public function updateArticle($data, $id): Article;
     public function deleteById($id): Article;
 }
