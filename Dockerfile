@@ -21,6 +21,7 @@ RUN apt-get -y update && apt-get install -y \
     php8.2-bcmath \
     php8.2-zip \
     php8.2-mbstring \
+    php8.2-intl \
     php8.2-ast
 
 # Install system dependencies
