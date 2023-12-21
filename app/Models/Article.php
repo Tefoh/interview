@@ -7,7 +7,16 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property string $title
+ * @property string $content
+ * @property int $author_id
+ * @property User $author
+ * @property Carbon $publication_at
+ * @property PublicationStatusEnum $publication_status
+ */
 class Article extends Model
 {
     use HasFactory;
