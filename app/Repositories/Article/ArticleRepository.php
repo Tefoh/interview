@@ -82,4 +82,13 @@ class ArticleRepository implements ArticleRepositoryInterface
 
         return $article;
     }
+
+
+    public function deleteMany(array $ids): bool
+    {
+        return $this->article
+            ->newQuery()
+            ->whereIn('id', $ids)
+            ->delete();
+    }
 }

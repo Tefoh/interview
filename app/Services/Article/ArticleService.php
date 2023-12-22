@@ -115,4 +115,25 @@ class ArticleService implements ArticleServiceInterface
 
         return $article;
     }
+
+    public function deleteByIds(array $ids): bool
+    {
+        DB::beginTransaction();
+
+        try {
+            $result = $this->articleRepository->deleteMany($ids);
+
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::error('error-at-delete-article', [
+                'message' => $exception->getMessage()
+            ]);
+
+            throw new InvalidArgumentException('Unable to delete article data');
+        }
+
+        DB::commit();
+
+        return $result;
+    }
 }

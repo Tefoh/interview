@@ -19,4 +19,6 @@ interface ArticleRepositoryInterface
     public function update(array $data, int $id): Model;
 
     public function delete(int $id): Model;
+
+    public function deleteMany(array $ids): bool;
 }

@@ -3,6 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Enums\PublicationStatusEnum;
+use App\Filament\Resources\ArticleResource\Actions\ArticleDeleteTableAction;
+use App\Filament\Resources\ArticleResource\Actions\ArticleDeleteBulkAction;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Filament\Resources\ArticleResource\RelationManagers;
 use App\Models\Article;
@@ -109,11 +111,11 @@ class ArticleResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                ArticleDeleteTableAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    ArticleDeleteBulkAction::make(),
                 ]),
             ]);
     }

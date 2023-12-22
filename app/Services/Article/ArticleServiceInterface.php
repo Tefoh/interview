@@ -12,6 +12,7 @@ interface ArticleServiceInterface
     public function getAll(): Collection;
     public function getById(int $id): Article;
     public function saveArticle(array $data): Article;
-    public function updateArticle($data, Article $article): Article;
-    public function deleteById($id): Article;
+    public function updateArticle(array $data, Article $article): Article;
+    public function deleteById(int $id): Article;
+    public function deleteByIds(array $ids): bool;
 }
