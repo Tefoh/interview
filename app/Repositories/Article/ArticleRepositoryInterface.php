@@ -21,4 +21,8 @@ interface ArticleRepositoryInterface
     public function delete(int $id): Model;
 
     public function deleteMany(array $ids): bool;
+
+    public function restore(int $id): Model;
+
+    public function restoreMany(array $ids): bool;
 }

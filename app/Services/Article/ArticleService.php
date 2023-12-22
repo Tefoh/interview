@@ -136,4 +136,47 @@ class ArticleService implements ArticleServiceInterface
 
         return $result;
     }
+
+    public function restoreById($id): Article
+    {
+        DB::beginTransaction();
+
+        try {
+            /** @var Article $article */
+            $article = $this->articleRepository->restore($id);
+
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::error('error-at-restore-article', [
+                'message' => $exception->getMessage()
+            ]);
+
+            throw new InvalidArgumentException('Unable to restore article data');
+        }
+
+        DB::commit();
+
+        return $article;
+    }
+
+    public function restoreByIds(array $ids): bool
+    {
+        DB::beginTransaction();
+
+        try {
+            $result = $this->articleRepository->restoreMany($ids);
+
+        } catch (Exception $exception) {
+            DB::rollBack();
+            Log::error('error-at-restore-article', [
+                'message' => $exception->getMessage()
+            ]);
+
+            throw new InvalidArgumentException('Unable to restore article data');
+        }
+
+        DB::commit();
+
+        return $result;
+    }
 }

@@ -6,6 +6,7 @@ use App\Models\Article;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 
 class ArticleRepository implements ArticleRepositoryInterface
@@ -23,8 +24,12 @@ class ArticleRepository implements ArticleRepositoryInterface
                 'articles.content',
                 'articles.publication_at',
                 'articles.publication_status',
+                'articles.deleted_at',
                 DB::raw('users.name as author'),
                 DB::raw('users.id as author_id')
+            ])
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
             ])
             ->join('users', 'users.id', '=', 'articles.author_id');
     }
@@ -39,6 +44,9 @@ class ArticleRepository implements ArticleRepositoryInterface
     {
         return $this->article
             ->newQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ])
             ->where('id', $id)
             ->first();
     }
@@ -62,7 +70,11 @@ class ArticleRepository implements ArticleRepositoryInterface
     public function update($data, $id): Model
     {
         /** @var Article $article */
-        $article = $this->article->newQuery()->find($id);
+        $article = $this->article->newQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ])
+            ->find($id);
 
         $article->title = $data['title'];
         $article->content = $data['content'];
@@ -90,5 +102,31 @@ class ArticleRepository implements ArticleRepositoryInterface
             ->newQuery()
             ->whereIn('id', $ids)
             ->delete();
+    }
+
+    public function restore(int $id): Model
+    {
+        /** @var Article $article */
+        $article = $this->article
+            ->newQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ])
+            ->find($id);
+        $article->restore();
+
+        return $article;
+    }
+
+
+    public function restoreMany(array $ids): bool
+    {
+        return $this->article
+            ->newQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ])
+            ->whereIn('id', $ids)
+            ->update(['deleted_at' => null]);
     }
 }

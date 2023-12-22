@@ -15,4 +15,6 @@ interface ArticleServiceInterface
     public function updateArticle(array $data, Article $article): Article;
     public function deleteById(int $id): Article;
     public function deleteByIds(array $ids): bool;
+    public function restoreById(int $id): Article;
+    public function restoreByIds(array $ids): bool;
 }

@@ -65,9 +65,25 @@ class ArticlePolicy
     }
 
     /**
+     * Determine whether the user can restore the model.
+     */
+    public function restoreAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can permanently delete the model.
      */
     public function forceDelete(User $user, Article $article): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDeleteAny(User $user): bool
     {
         return $user->isAdmin();
     }
