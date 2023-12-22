@@ -6,12 +6,13 @@ use App\Enums\PublicationStatusEnum;
 use App\Models\Article;
 use App\Repositories\Article\ArticleRepositoryInterface;
 use Exception;
+use Filament\Notifications\Notification;
+use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use InvalidArgumentException;
 
 class ArticleService implements ArticleServiceInterface
 {
@@ -65,7 +66,11 @@ class ArticleService implements ArticleServiceInterface
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to save article data');
+            Notification::make()
+                ->title('Unable to save article data, contact IT for support!')
+                ->danger()
+                ->send();
+            throw new Halt();
         }
 
         return $article;
@@ -85,7 +90,11 @@ class ArticleService implements ArticleServiceInterface
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to update article data');
+            Notification::make()
+                ->title('Unable to update article data, contact IT for support!')
+                ->danger()
+                ->send();
+            throw new Halt();
         }
 
         DB::commit();
@@ -108,7 +117,11 @@ class ArticleService implements ArticleServiceInterface
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to delete article data');
+            Notification::make()
+                ->title('Unable to delete article data, contact IT for support!')
+                ->danger()
+                ->send();
+            throw new Halt();
         }
 
         DB::commit();
@@ -129,7 +142,11 @@ class ArticleService implements ArticleServiceInterface
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to delete article data');
+            Notification::make()
+                ->title('Unable to delete articles data, contact IT for support!')
+                ->danger()
+                ->send();
+            throw new Halt();
         }
 
         DB::commit();
@@ -151,7 +168,11 @@ class ArticleService implements ArticleServiceInterface
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to restore article data');
+            Notification::make()
+                ->title('Unable to restore article data, contact IT for support!')
+                ->danger()
+                ->send();
+            throw new Halt();
         }
 
         DB::commit();
@@ -172,7 +193,11 @@ class ArticleService implements ArticleServiceInterface
                 'message' => $exception->getMessage()
             ]);
 
-            throw new InvalidArgumentException('Unable to restore article data');
+            Notification::make()
+                ->title('Unable to restore articles data, contact IT for support!')
+                ->danger()
+                ->send();
+            throw new Halt();
         }
 
         DB::commit();
