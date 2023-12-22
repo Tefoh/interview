@@ -81,6 +81,9 @@ class ArticleService implements ArticleServiceInterface
         DB::beginTransaction();
 
         try {
+            $data['publication_status'] ??= PublicationStatusEnum::DRAFT;
+            $data['publication_at'] ??= $article->publication_at;
+
             $data = array_merge($article->toArray(), $data);
             /** @var Article $article */
             $article = $this->articleRepository->update($data, $article->id);
@@ -111,7 +114,7 @@ class ArticleService implements ArticleServiceInterface
             /** @var Article $article */
             $article = $this->articleRepository->delete($id);
 
-        } catch (Exception $exception) {
+        } catch (Exception|\Error $exception) {
             DB::rollBack();
             Log::error('error-at-delete-article', [
                 'message' => $exception->getMessage()
@@ -136,7 +139,7 @@ class ArticleService implements ArticleServiceInterface
         try {
             $result = $this->articleRepository->deleteMany($ids);
 
-        } catch (Exception $exception) {
+        } catch (Exception|\Error $exception) {
             DB::rollBack();
             Log::error('error-at-delete-article', [
                 'message' => $exception->getMessage()
@@ -162,7 +165,7 @@ class ArticleService implements ArticleServiceInterface
             /** @var Article $article */
             $article = $this->articleRepository->restore($id);
 
-        } catch (Exception $exception) {
+        } catch (Exception|\Error $exception) {
             DB::rollBack();
             Log::error('error-at-restore-article', [
                 'message' => $exception->getMessage()
@@ -187,7 +190,7 @@ class ArticleService implements ArticleServiceInterface
         try {
             $result = $this->articleRepository->restoreMany($ids);
 
-        } catch (Exception $exception) {
+        } catch (Exception|\Error $exception) {
             DB::rollBack();
             Log::error('error-at-restore-article', [
                 'message' => $exception->getMessage()
