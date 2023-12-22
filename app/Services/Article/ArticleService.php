@@ -25,7 +25,7 @@ class ArticleService implements ArticleServiceInterface
             ->getAllBuilder()
             ->when(
                 ! auth()->user()?->isAdmin(),
-                fn (Builder $builder) => $builder->where('author_id', auth()->id())
+                fn (Builder $builder) => $this->articleRepository->setAuthor($builder)
             );
     }
 

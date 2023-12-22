@@ -34,6 +34,11 @@ class ArticleRepository implements ArticleRepositoryInterface
             ->join('users', 'users.id', '=', 'articles.author_id');
     }
 
+    public function setAuthor(Builder $builder): Builder
+    {
+        return $builder->where('author_id', auth()->id());
+    }
+
     public function getAll(): Collection
     {
         return $this->getAllBuilder()

@@ -10,6 +10,8 @@ interface ArticleRepositoryInterface
 {
     public function getAllBuilder(): Builder;
 
+    public function setAuthor(Builder $builder): Builder;
+
     public function getAll(): Collection;
 
     public function getById(int $id): Model|null;
