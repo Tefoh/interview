@@ -14,6 +14,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -27,9 +28,9 @@ class ArticleResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $articleRepository = app(ArticleRepositoryInterface::class);
+        $articleService = app(ArticleServiceInterface::class);
 
-        return $articleRepository->getAllBuilder();
+        return $articleService->getArticleListQuery();
     }
 
     public static function resolveRecordRouteBinding(int | string $key): ?Model
@@ -37,6 +38,20 @@ class ArticleResource extends Resource
         $articleService = app(ArticleServiceInterface::class);
 
         return $articleService->getById($key);
+    }
+
+    public static function canView(Model $record): bool
+    {
+        $user = auth()->user();
+
+        return $user->isAdmin() || $user->id === $record->author_id;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        $user = auth()->user();
+
+        return $user->isAdmin() || $user->id === $record->author_id;
     }
 
     public static function form(Form $form): Form

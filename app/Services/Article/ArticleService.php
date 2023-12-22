@@ -6,19 +6,27 @@ use App\Enums\PublicationStatusEnum;
 use App\Models\Article;
 use App\Repositories\Article\ArticleRepositoryInterface;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
 
 class ArticleService implements ArticleServiceInterface
 {
     public function __construct(protected readonly ArticleRepositoryInterface $articleRepository)
     { }
+
+    public function getArticleListQuery(): Builder
+    {
+        return $this->articleRepository
+            ->getAllBuilder()
+            ->when(
+                ! auth()->user()?->isAdmin(),
+                fn (Builder $builder) => $builder->where('author_id', auth()->id())
+            );
+    }
 
     public function getAll(): Collection
     {
@@ -31,7 +39,7 @@ class ArticleService implements ArticleServiceInterface
         $article = $this->articleRepository->getById($id);
 
         if (! $article) {
-            Log::info('error-at-update-article', [
+            Log::info('error-at-get-article', [
                 'message' => 'Article not found with id of: ' . $id
             ]);
             throw new ModelNotFoundException('Article not found!');
@@ -63,13 +71,14 @@ class ArticleService implements ArticleServiceInterface
         return $article;
     }
 
-    public function updateArticle($data, $id): Article
+    public function updateArticle($data, Article $article): Article
     {
         DB::beginTransaction();
 
         try {
+            $data = array_merge($article->toArray(), $data);
             /** @var Article $article */
-            $article = $this->articleRepository->update($data, $id);
+            $article = $this->articleRepository->update($data, $article->id);
         } catch (Exception $exception) {
             DB::rollBack();
             Log::error('error-at-update-article', [

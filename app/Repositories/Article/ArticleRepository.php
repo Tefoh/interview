@@ -23,7 +23,8 @@ class ArticleRepository implements ArticleRepositoryInterface
                 'articles.content',
                 'articles.publication_at',
                 'articles.publication_status',
-                DB::raw('users.name as author')
+                DB::raw('users.name as author'),
+                DB::raw('users.id as author_id')
             ])
             ->join('users', 'users.id', '=', 'articles.author_id');
     }
