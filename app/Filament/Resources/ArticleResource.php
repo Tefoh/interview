@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Enums\PublicationStatusEnum;
 use App\Filament\Resources\ArticleResource\Actions\ArticleDeleteTableAction;
 use App\Filament\Resources\ArticleResource\Actions\ArticleDeleteBulkAction;
+use App\Filament\Resources\ArticleResource\Actions\ArticleRestoreBulkAction;
+use App\Filament\Resources\ArticleResource\Actions\ArticleRestoreTableAction;
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Filament\Resources\ArticleResource\RelationManagers;
 use App\Models\Article;
@@ -106,16 +108,20 @@ class ArticleResource extends Resource
                 PublicationDate::make('publication_at')->label('Publication date'),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 ArticleDeleteTableAction::make(),
+//                Tables\Actions\ForceDeleteAction::make(),
+                ArticleRestoreTableAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     ArticleDeleteBulkAction::make(),
+//                Tables\Actions\ForceDeleteAction::make(),
+                    ArticleRestoreBulkAction::make(),
                 ]),
             ]);
     }

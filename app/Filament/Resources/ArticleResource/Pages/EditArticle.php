@@ -25,6 +25,8 @@ class EditArticle extends EditRecord
     {
         return [
             ArticleResource\Actions\ArticleDeleteAction::make(),
+//            Actions\ForceDeleteAction::make(),
+            ArticleResource\Actions\ArticleRestoreAction::make(),
         ];
     }
 }
