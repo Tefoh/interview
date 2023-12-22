@@ -45,7 +45,15 @@ class ArticlePolicy
      */
     public function delete(User $user, Article $article): bool
     {
-        return $user->isAdmin() || $article->author_id === $user->id;
+        return $user->isAdmin();
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     */
+    public function deleteAny(User $user): bool
+    {
+        return $user->isAdmin();
     }
 
     /**
