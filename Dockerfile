@@ -3,6 +3,8 @@ FROM ubuntu:22.04
 ARG GID
 ARG UID
 
+COPY . /var/www
+
 # Set working directory
 WORKDIR /var/www
 
@@ -53,16 +55,16 @@ ADD .docker/app/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 
 # Create system user to run Composer and Artisan Commands
 RUN addgroup --gid ${GID} --system laravel
-RUN useradd -g laravel --system -u ${UID} -d /home/laravel laravel
-RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user
+RUN useradd -g laravel -G root,www-data --system --shell /bin/sh -u ${UID} -d /home/laravel laravel
+RUN mkdir -p /home/laravel/.composer && \
+    chown -R laravel:laravel /home/laravel /var/www
 
 RUN mkdir -p /run/php/
 RUN touch /run/php/php8.2-fpm.pid
 RUN chmod +x /run/php/php8.2-fpm.pid
-RUN chown 1000:1000 /run/php/php8.2-fpm.pid
+RUN chown laravel:laravel /run/php/php8.2-fpm.pid
 
 # Run php-fpm
-CMD ["php-fpm8.2", "-F"]
+CMD ["/bin/bash", "-c", "chmod -R 777 ./storage ./bootstrap/cache; php-fpm8.2 -F"]
 
 EXPOSE 9000
