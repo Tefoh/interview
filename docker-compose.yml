@@ -7,8 +7,7 @@ services:
     depends_on:
       - app
     ports:
-      - 80:80
-      - 8000:8000
+      - 8000:80
     volumes:
       - ./.docker/nginx:/etc/nginx/conf.d/
       - ./:/var/www
@@ -18,14 +17,16 @@ services:
   app:
     build:
       args:
-        uid: 1000
-        user: tofiq
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
       context: ./
       dockerfile: Dockerfile
     image: alibaba-app
     container_name: alibaba-app
     depends_on:
       - database
+    volumes:
+      - ./:/var/www
     networks:
       - site
       - app
@@ -34,10 +35,10 @@ services:
     image: mysql:8.0
     container_name: alibaba-database
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_DATABASE: ${DB_DATABASE:-alibaba}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_USER: ${DB_USERNAME:-alibaba_user}
     ports:
       - 3306:3306
     volumes:

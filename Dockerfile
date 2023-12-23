@@ -1,11 +1,15 @@
 FROM ubuntu:22.04
 
-COPY . /var/www
+ARG GID
+ARG UID
 
-ARG uid
-ARG user
+# Set working directory
+WORKDIR /var/www
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get -y update && apt-get -y install software-properties-common \
     && add-apt-repository ppa:ondrej/php
@@ -48,21 +52,17 @@ ADD .docker/app/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 
 
 # Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN addgroup --gid ${GID} --system laravel
+RUN useradd -g laravel --system -u ${UID} -d /home/laravel laravel
 RUN mkdir -p /home/$user/.composer && \
-    chown -R $user:$user /home/$user /var/www
+    chown -R $user:$user /home/$user
 
 RUN mkdir -p /run/php/
 RUN touch /run/php/php8.2-fpm.pid
 RUN chmod +x /run/php/php8.2-fpm.pid
 RUN chown 1000:1000 /run/php/php8.2-fpm.pid
 
-# Set working directory
-WORKDIR /var/www
-
 # Run php-fpm
 CMD ["php-fpm8.2", "-F"]
-
-USER $user
 
 EXPOSE 9000
